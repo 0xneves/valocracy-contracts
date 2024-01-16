@@ -65,20 +65,23 @@ contract Valocracy is ERC721, Ownable, IDNFT, IValocracy {
      * @dev See {IValocracy-mint}.
      */
     function mint(address account, uint256 valorId) public onlyOwner {
+        uint256 rarity = rarityOf(valorId);
+
+        // Overflow: not possible because values will never reach 2^256 while rarity is kept low
         unchecked {
-            // Overflow: not possible because values will never reach 2^256.
             _totalSupply++;
+
             _setUserStats(
                 account,
-                levelOf(account) + rarityOf(valorId),
+                levelOf(account) + rarity,
                 block.timestamp + vacancyPeriod()
             );
+
+            ITreasury(_treasury).deposit(account, rarity * 1e18);
         }
 
         _mint(account, _totalSupply);
         _setValorId(_totalSupply, valorId);
-
-        ITreasury(_treasury).deposit(account, rarityOf(valorId));
 
         emit Mint(account, valorId);
     }

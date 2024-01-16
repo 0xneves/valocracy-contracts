@@ -8,7 +8,7 @@ abstract contract IDNFT is IIDNFT {
     mapping(uint256 => uint256) private _valorIds;
 
     // Mapping from valor ID to rarity
-    mapping(uint256 => uint64) private _rarity;
+    mapping(uint256 => uint256) private _rarity;
 
     // Mapping from valor ID to metadata
     mapping(uint256 => string) private _metadata;
@@ -19,7 +19,7 @@ abstract contract IDNFT is IIDNFT {
     /**
      * @dev See {IValocracy-vacancy}.
      */
-    function vacancyPeriod() public pure virtual returns (uint64) {
+    function vacancyPeriod() public pure virtual returns (uint256) {
         return 180 days;
     }
 
@@ -33,7 +33,7 @@ abstract contract IDNFT is IIDNFT {
     /**
      * @dev See {IValocracy-rarityOf}.
      */
-    function rarityOf(uint256 valorId) public view virtual returns (uint64) {
+    function rarityOf(uint256 valorId) public view virtual returns (uint256) {
         return _rarity[valorId];
     }
 
@@ -49,7 +49,7 @@ abstract contract IDNFT is IIDNFT {
     /**
      * @dev See {IValocracy-expiryOf}.
      */
-    function expiryOf(address account) public view virtual returns (uint128) {
+    function expiryOf(address account) public view virtual returns (uint256) {
         (, uint128 expiration) = _parseData(_userStats[account]);
         return _validateExpiry(expiration);
     }
@@ -57,7 +57,7 @@ abstract contract IDNFT is IIDNFT {
     /**
      * @dev See {IValocracy-levelOf}.
      */
-    function levelOf(address account) public view virtual returns (uint128) {
+    function levelOf(address account) public view virtual returns (uint256) {
         (uint128 level, uint128 expiration) = _parseData(_userStats[account]);
         return _mana(level, _validateExpiry(expiration));
     }
@@ -67,11 +67,8 @@ abstract contract IDNFT is IIDNFT {
      */
     function _validateExpiry(
         uint128 expiration
-    ) internal view virtual returns (uint128) {
-        if (expiration > block.timestamp) {
-            return expiration;
-        }
-
+    ) internal view virtual returns (uint256) {
+        if (expiration > block.timestamp) return expiration;
         return 0;
     }
 
@@ -110,7 +107,7 @@ abstract contract IDNFT is IIDNFT {
      */
     function _setValor(
         uint256 valorId,
-        uint64 rarityId,
+        uint256 rarityId,
         string memory metadata
     ) internal virtual {
         _rarity[valorId] = rarityId;
@@ -145,12 +142,10 @@ abstract contract IDNFT is IIDNFT {
      * period. Which means that the mana will decay over time.
      */
     function _mana(
-        uint128 level,
-        uint128 expiration
-    ) public view virtual returns (uint128) {
-        uint128 timeElapsed = expiration > 0
-            ? expiration - uint128(block.timestamp)
-            : 0;
+        uint256 level,
+        uint256 expiration
+    ) public view virtual returns (uint256) {
+        uint256 timeElapsed = expiration > 0 ? expiration - block.timestamp : 0;
         return (level * timeElapsed) / vacancyPeriod();
     }
 }

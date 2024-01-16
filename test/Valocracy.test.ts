@@ -76,6 +76,9 @@ describe("Valocracy", function () {
 			await expect(await Valocracy.mint(Jhon.address, 0))
 				.to.emit(Valocracy, "Mint")
 				.withArgs(Jhon.address, 0);
+
+			const balanceOf = await Treasury.balanceOf(Jhon.address);
+			console.log(balanceOf.toString(), "balanceOf Jhon");
 		});
 
 		it("Should fail to transfer the token after its been minted", async function () {

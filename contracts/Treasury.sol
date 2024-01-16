@@ -71,8 +71,9 @@ contract Treasury is ERC20, ITreasury {
      * @dev See {IERC4626-withdraw}.
      */
     function withdraw(address receiver, uint256 shares) public {
-        uint256 assets = previewWithdraw(shares);
         _burn(msg.sender, shares);
+
+        uint256 assets = previewWithdraw(shares);
         IERC20(_asset).transfer(receiver, assets);
 
         emit Withdraw(msg.sender, receiver, assets, shares);

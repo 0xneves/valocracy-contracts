@@ -18,7 +18,7 @@ interface IIDNFT {
      * and not in days, months or years. When making dynamic vacancy periods,
      * make sure to override the `_mana` function.
      */
-    function vacancyPeriod() external view returns (uint64);
+    function vacancyPeriod() external view returns (uint256);
 
     /**
      * @dev Returns the valor ID linked to the given token ID.
@@ -28,7 +28,7 @@ interface IIDNFT {
     /**
      * @dev Returns the rarity of the given valor ID.
      */
-    function rarityOf(uint256 valorId) external view returns (uint64);
+    function rarityOf(uint256 valorId) external view returns (uint256);
 
     /**
      * @dev Returns the metadata of the given valor ID.
@@ -38,11 +38,11 @@ interface IIDNFT {
     /**
      * @dev Returns the level of governance power of a given account.
      */
-    function levelOf(address account) external view returns (uint128);
+    function levelOf(address account) external view returns (uint256);
 
     /**
      * @dev Expiration of the account. The governance power decays after the
      * vacancy period has passed. See {IValocracy-vacancyPeriod}.
      */
-    function expiryOf(address account) external view returns (uint128);
+    function expiryOf(address account) external view returns (uint256);
 }
