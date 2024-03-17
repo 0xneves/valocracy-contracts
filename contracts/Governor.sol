@@ -18,9 +18,9 @@ contract MyGovernor is
         IVotes _token,
         TimelockController _timelock
     )
-        Governor("MyGovernor")
+        Governor("Valocracy")
         GovernorVotes(_token)
-        GovernorVotesQuorumFraction(4)
+        GovernorVotesQuorumFraction(51)
         GovernorTimelockControl(_timelock)
     {}
 
