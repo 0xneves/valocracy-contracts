@@ -67,6 +67,18 @@ interface IValocracy {
     function mint(address account, uint256 valorId) external;
 
     /**
+     * @dev Burn the given token ID.
+     *
+     * Requirements:
+     *
+     * - `tokenId` must exist.
+     * - `msg.sender` must be the owner of the token.
+     *
+     * Emits a {Transfer} event to the Zero Address.
+     */
+    function burn(uint256 tokenId) external;
+
+    /**
      * @dev Create a new Valor for the protocol.
      *
      * Valor is a NFT that represents governance power. Their characteristics
