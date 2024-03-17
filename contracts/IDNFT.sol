@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {IIDNFT} from "./interface/IIDNFT.sol";
+import {IIDNFT} from "./interfaces/IIDNFT.sol";
 
 abstract contract IDNFT is IIDNFT {
     // Mapping from token ID to valor ID
@@ -103,7 +103,7 @@ abstract contract IDNFT is IIDNFT {
     }
 
     /**
-     * @dev Sets the rarity and metadata of a valor.
+     * @dev Sets the rarity and metadata of the valor.
      */
     function _setValor(
         uint256 valorId,
@@ -122,13 +122,6 @@ abstract contract IDNFT is IIDNFT {
     }
 
     /**
-     * @dev Returns true if the account exists.
-     */
-    function _exists(address account) internal view virtual returns (bool) {
-        return _userStats[account] > 0;
-    }
-
-    /**
      * @dev Calculate the mana of an account. Mana is the amount of governance
      * power (level) that is currently active at the moment.
      *
@@ -139,7 +132,7 @@ abstract contract IDNFT is IIDNFT {
      *
      * The mana is calculated as the product of the level and the time elapsed
      * since the last time the account was updated, then divided by the vacancy
-     * period. Which means that the mana will decay over time.
+     * period.
      */
     function _mana(
         uint256 level,
