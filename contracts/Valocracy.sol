@@ -3,11 +3,12 @@ pragma solidity ^0.8.19;
 
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {Votes} from "./Votes.sol";
 import {IDNFT} from "./IDNFT.sol";
-import {ITreasury} from "./interface/ITreasury.sol";
-import {IValocracy} from "./interface/IValocracy.sol";
+import {ITreasury} from "./interfaces/ITreasury.sol";
+import {IValocracy} from "./interfaces/IValocracy.sol";
 
-contract Valocracy is ERC721, Ownable, IDNFT, IValocracy {
+contract Valocracy is ERC721, Ownable, IDNFT, Votes, IValocracy {
     /**
      * @dev The Governance Contract.
      */
@@ -62,6 +63,13 @@ contract Valocracy is ERC721, Ownable, IDNFT, IValocracy {
     }
 
     /**
+     * @dev Returns the current amount of votes that `account` has.
+     */
+    function getVotes(address account) public view override returns (uint256) {
+        return levelOf(account);
+    }
+
+    /**
      * @dev See {IValocracy-mint}.
      */
     function mint(address account, uint256 valorId) public onlyOwner {
@@ -82,8 +90,16 @@ contract Valocracy is ERC721, Ownable, IDNFT, IValocracy {
 
         _mint(account, _totalSupply);
         _setValorId(_totalSupply, valorId);
+        _transferVotingUnits(address(0), account, levelOf(account));
 
         emit Mint(account, valorId);
+    }
+
+    /**
+     * @dev See {IValocracy-burn}.
+     */
+    function burn(uint256 tokenId) public {
+        _burn(tokenId);
     }
 
     /**
@@ -115,35 +131,23 @@ contract Valocracy is ERC721, Ownable, IDNFT, IValocracy {
     }
 
     /**
-     * @dev Burn the given token ID.
+     * @dev Overriding the {ERC721-_transfer} to make the token
+     * soulbounded, making it non-transferable to another account.
      *
-     * Requirements:
-     *
-     * - `tokenId` must exist.
-     * - `msg.sender` must be the owner of the token.
-     *
-     * Emits a {Transfer} event to the Zero Address.
+     * The account can still burn the token calling {ERC721-burn}
      */
-    function burn(uint256 tokenId) public {
-        _burn(tokenId);
+    function _transfer(address, address, uint256) internal pure override {
+        revert TokenSoulbound();
     }
 
     /**
-     * @dev Overriding the {ERC721-_beforeTokenTransfer} to make the token
-     * soulbounded, making it non-transferable to another accounts.
+     * @dev Returns the balance of `account`.
      *
-     * The account can still burn the token by sending to the zero address.
-     *
-     * Requirements:
-     *
-     * - `to` must be the zero address.
+     * WARNING: Overriding this function will likely result in incorrect vote tracking.
      */
-    function _beforeTokenTransfer(
-        address,
-        address to,
-        uint256 tokenId,
-        uint256
-    ) internal virtual override {
-        if (to != address(0) && _exists(tokenId)) revert TokenSoulbound();
+    function _getVotingUnits(
+        address account
+    ) internal view override returns (uint256) {
+        return levelOf(account);
     }
 }
